@@ -5,6 +5,23 @@ import random
 import numpy as np
 import re
 
+'''
+Полумарковский процесс (?)
+
+Входные данные: 
+    stah_matrix - вероятности переходов 
+    stah_vector - вероятности переходов для старта
+    
+    ### Определяют время перехода ###
+    time_matrix - типы переходов  
+    time_param_matrix - параметры переходов 
+    start_time - типы переходов (для старта)
+    start_param - параметры переходов (для старта)
+    
+    1 - Константа
+    2 - Экспоненте. распред.
+'''
+
 
 class H_mark_sys:
     start_vector = []
@@ -12,32 +29,34 @@ class H_mark_sys:
     stah_matrix = []
     time_matrix = []
 
-    def __init__(self, start_vector, start_time, stah_matrix, time_matrix, start_time_params, time_params_matrix):
-        self.start_vector = self.read_matr(start_vector)
+    def __init__(self, start_vector, start_time, stah_matrix, time_matrix, start_time_params, time_params_matrix,
+                 folder):
+        self.start_vector = self.read_matr(folder + start_vector)
 
-        self.start_time = self.read_matr(start_time)
+        self.start_time = self.read_matr(folder + start_time)
 
-        self.stah_matrix = self.read_matr(stah_matrix)
+        self.stah_matrix = self.read_matr(folder + stah_matrix)
 
-        self.time_matrix = self.read_matr(time_matrix)
+        self.time_matrix = self.read_matr(folder + time_matrix)
 
-        self.start_time_param = self.read_param(start_time_params)
-        self.time_param_matrix = self.read_param(time_params_matrix)
+        self.start_time_param = self.read_param(folder + start_time_params)
+        self.time_param_matrix = self.read_param(folder + time_params_matrix)
 
         # СОздаём матрицу для статистики переходов
         self.statistic_matr = np.zeros((len(self.stah_matrix), len(self.stah_matrix[0])))
 
     def read_matr(self, filename):
         matr = []
+
         with open(filename) as f:
             for line in f:
-                # re.split('; |, ', str)
                 matr.append([float(x) for x in line.split()])
         return matr
 
     # Для чтения параметров зла задания случ величины
     def read_param(self, filename):
         matr = []
+
         with open(filename) as f:
             for line in f:
                 matr.append([float(x) for x in re.split(";| ", line)])
@@ -47,7 +66,6 @@ class H_mark_sys:
         return np.hstack(vector)
 
     def rnd_choice(self, array):
-
         # array = self.vectorToArray(vector)
         summ = sum(array)
         if summ < 1:
@@ -62,7 +80,6 @@ class H_mark_sys:
         pass
 
     def start(self, iter):
-
         cur_variants = self.vectorToArray(self.start_vector)
         cur_times = self.vectorToArray(self.start_time)
         cur_state_index = -1
@@ -83,7 +100,6 @@ class H_mark_sys:
         pass
 
     def write_jump(self, index, stah, new_state, time, old_state):
-
         self.statistic_matr[old_state][new_state] += 1
 
         print("Шаг: ", index + 1, "\t", old_state + 1, " -> ", new_state + 1, "\tЗа время",
@@ -96,7 +112,6 @@ class H_mark_sys:
 
     # Определяет время прыжка, сначала тип, затем параметры(передаёт)
     def jump(self, cur_state_index, new_state_index, cur_times):
-
         # Если из стартового положения
         if cur_state_index == -1:
             # константа
@@ -122,15 +137,36 @@ class H_mark_sys:
 
 # ********************************
 
-sys = H_mark_sys("start_vector_1.txt", "start_time_1.txt", "matrix_1.txt", "time_matrix_1.txt",
-                 "start_time_param_1.txt",
-                 "time_param_matrix_1.txt")
+stah_matrix = "matrix_1.txt"
+stah_vector = "start_vector_1.txt"
 
-sys.start(iter=1000)
+### Определяют время перехода ###
+time_matrix = "time_matrix_1.txt"
+time_param_matrix = "time_param_matrix_1.txt"
+start_time = "start_time_1.txt"
+start_param = "start_time_param_1.txt"
 
-# mas = [0, 0, 0]
-# for i in range(100000):
-#     choice_index = sys.rnd_choice(sys.start_vector)
-#     mas[choice_index] += 1
+number_of_iteration = 1000
+
+
+try:
+    sys = H_mark_sys(stah_matrix=stah_matrix,
+                     start_vector=stah_vector,
+                     time_matrix=time_matrix,
+                     time_params_matrix=time_param_matrix,
+                     start_time=start_time,
+                     start_time_params=start_param,
+                     folder="data/")
+    sys.start(iter=number_of_iteration)
+except FileNotFoundError as err:
+    sys = H_mark_sys(stah_matrix=stah_matrix,
+                     start_vector=stah_vector,
+                     time_matrix=time_matrix,
+                     time_params_matrix=time_param_matrix,
+                     start_time=start_time,
+                     start_time_params=start_param,
+                     folder="dist/data/")
+    sys.start(iter=number_of_iteration)
+
 input()
 pass
