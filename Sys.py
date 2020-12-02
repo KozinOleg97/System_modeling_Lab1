@@ -141,9 +141,7 @@ class H_mark_sys:
              str(new_state + 1), "\tЗа время",
              str(np.around(float(time), decimals=3)),
              "\t", "Вероятности", str(stah), "\n")))
-
-
-        """
+        """    
         print("Шаг № ", self.jump_counter + 1, "\t", "В момент времени: ", index + 1, "\t", old_state + 1, " -> ",
               new_state + 1, "\tЗа время",
               np.around(float(time), decimals=3),
@@ -202,14 +200,19 @@ class H_mark_sys:
 
 # ********************************
 
-stah_matrix = "matrix_1.txt"
-stah_vector = "start_vector_1.txt"
+#номер эксперемента = название файла
+experement_numb = "4"
+
+stah_matrix = "matrix_" + experement_numb + ".txt"
+stah_vector = "start_vector_" + experement_numb + ".txt"
 
 ### Определяют время перехода ###
-time_matrix = "time_matrix_1.txt"
-time_param_matrix = "time_param_matrix_1.txt"
-start_time = "start_time_1.txt"
-start_param = "start_time_param_1.txt"
+time_matrix = "time_matrix_" + experement_numb + ".txt"
+time_param_matrix = "time_param_matrix_" + experement_numb + ".txt"
+start_time = "start_time_" + experement_numb + ".txt"
+start_param = "start_time_param_" + experement_numb + ".txt"
+###########################################
+
 
 # 1 iteration = 0.00001 sec
 number_of_iteration = 1000000
@@ -222,7 +225,7 @@ try:
                      start_time=start_time,
                      start_time_params=start_param,
                      folder="data/",
-                     experement_name="exp1")
+                     experement_name="exp" + experement_numb)
     sys.start(iter=number_of_iteration)
 except FileNotFoundError as err:
     sys = H_mark_sys(stah_matrix=stah_matrix,
@@ -232,7 +235,5 @@ except FileNotFoundError as err:
                      start_time=start_time,
                      start_time_params=start_param,
                      folder="dist/data/",
-                     experement_name="exp1")
+                     experement_name="exp" + experement_numb)
     sys.start(iter=number_of_iteration)
-
-
